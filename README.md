@@ -1,2 +1,2 @@
-# studenthuis-kelly-arantxio
-eindopdracht programmeren 4
+# studentenhuis-arakel
+studentenhuis eindopdracht programmeren 4 / rebuild
