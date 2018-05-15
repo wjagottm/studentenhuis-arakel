@@ -3,6 +3,7 @@ const moment = require('moment');
 const jwt = require('jwt-simple');
 const assert = require('assert');
 let authentication = require('../auth/authetication');
+var db = require('../config/db');
 
 const user = require('../models/UserLoginJSON');
 
@@ -19,12 +20,18 @@ function login(req, res, next) {
 	const password = req.body.password;
 
 	// TODO: Get token from database and check if it exists
-	if (false) {
-		res.status(401).json('{"message": "Niet geautoriseerd", "code": 401, "datetime": ' + moment().unix() + '}').end();
-		return;
-	}
-
-	let token = 'lol';
+	db.query(db.query('SELECT (ID, Email, Password) FROM user WHERE Email=' + email, function (error, rows, fields) {
+		if (error) {
+			next(error);
+		} else {
+			if(rows.email == email && rows.password == password) {
+				userId = rows.ID
+				var token = authentication.encodeToken(userId);
+			} else {
+				res.status(401).json('{"message": "Niet geautoriseerd", "code": 401, "datetime": ' + moment().unix() + '}').end();
+			}
+		}
+	}));
 
 	res.status(200).json('{"token": "' + token + '", "email": "' + email + '"}').end();
 }
