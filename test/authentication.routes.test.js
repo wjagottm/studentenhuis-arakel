@@ -14,6 +14,22 @@ let validToken
 
 describe('Registration', () => {
     it('should return a token when providing valid information', (done) => {
+        chai.request(server)
+            .post('.auth/authentication')
+            .send({
+                'firstname' : 'firstname',
+                'lastname' : 'lastname',
+                'email' : 'tst@test.com',
+                'password' : 'password'
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                res.body.should.be.a('object')
+
+                const response = res.body
+                response.should.have.property('token').which.is.a('string')
+                //response.should.have.property('email').which.is.a('string')
+            })
         //
         // Hier schrijf je jouw testcase.
         //
@@ -21,14 +37,15 @@ describe('Registration', () => {
         // Tip: deze test levert een token op. Dat token gebruik je in 
         // andere testcases voor beveiligde routes door het hier te exporteren
         // en in andere testcases te importeren via require.
-        // validToken = res.body.token
-        // module.exports = {
-        //     token: validToken
-        // }
+        validToken = res.body.token
+        module.exports = {
+            token: validToken
+        }
         done()
     })
 
     it('should return an error on GET request', (done) => {
+
         //
         // Hier schrijf je jouw testcase.
         //
@@ -46,6 +63,20 @@ describe('Registration', () => {
         //
         // Hier schrijf je jouw testcase.
         //
+        chai.request(server)
+            .post('./models/UserRegisterJSON')
+            .send({
+                'lastname': 'lastname'
+            })
+            .end((err, res) => {
+                res.should.have.status(404)
+                res.body.should.be.a('object')
+
+                const error = res.body
+                error.should.have.property('message')
+                error.should.have.property('code').equals(404)
+                error.should.have.property('datetime')
+            })
         done()
     })
 
@@ -53,6 +84,12 @@ describe('Registration', () => {
         //
         // Hier schrijf je jouw testcase.
         //
+        chai.request(server)
+            .get('/models/UserRegisterJSON')
+            .end( (err, res) => {
+                res.should.have.status(200)
+                res.body.should.be.length()
+            })
         done()
     })
 
@@ -60,6 +97,20 @@ describe('Registration', () => {
         //
         // Hier schrijf je jouw testcase.
         //
+        chai.request(server)
+            .post('./models/UserRegisterJSON')
+            .send({
+                'firstname': 'firstname'
+            })
+            .end((err, res) => {
+                res.should.have.status(404)
+                res.body.should.be.a('object')
+
+                const error = res.body
+                error.should.have.property('message')
+                error.should.have.property('code').equals(404)
+                error.should.have.property('datetime')
+            })
         done()
     })
 
@@ -85,6 +136,11 @@ describe('Login', () => {
         //
         // Hier schrijf je jouw testcase.
         //
+
+        validToken = res.body.token
+        module.exports = {
+            token: validToken
+        }
         done()
     })
 

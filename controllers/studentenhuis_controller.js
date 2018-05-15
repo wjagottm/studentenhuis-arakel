@@ -4,9 +4,9 @@
 let Studentenhuis = require('../models/Studentenhuis')
 const assert = require('assert')
 
-var db = require('../config/db');
+var db = require('../config/db')
 
-let studentenhuislist = []
+//let studentenhuislist = []
 
 module.exports = {
 
@@ -25,22 +25,22 @@ module.exports = {
 
         db.query(sql, [values], function (error, results) {
                 if (error) {
-                        next(error);
+                        next(error)
                 } else {
                         res.status(200).json({
                                 status: {
                                         query: 'OK'
                                 },
                                 result: results.affectedRows
-                        }).end();
-                };
-        });
+                        }).end()
+                }
+        })
     },
 
     getStudentenhuis(req, res, next) {
         db.query('SELECT * FROM studentenhuis', function (error, rows, fields) {
                 if (error) {
-                    next(error);
+                    next(error)
                 } else {
                     res.status(200).json({
                         status: {
@@ -48,24 +48,24 @@ module.exports = {
                         },
                         result: rows
                     }).end();
-                };
-            });
+                }
+            })
     },
 
     getStudentenhuisById(req, res, next) {
         const id = req.params.id
         db.query('SELECT * FROM studentenhuis WHERE ID=' + id, function (error, rows, fields) {
                 if (error) {
-                    next(error);
+                    next(error)
                 } else {
                     res.status(200).json({
                         status: {
                             query: 'OK'
                         },
                         result: rows
-                    }).end();
-                };
-            });
+                    }).end()
+                }
+            })
     },
 
     editStudentenhuis(req, res, next) {
