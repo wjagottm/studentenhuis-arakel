@@ -2,6 +2,7 @@ const settings = require('../config/config.json');
 const moment = require('moment');
 const jwt = require('jwt-simple');
 const assert = require('assert');
+let authentication = require('../auth/authetication');
 
 const user = require('../models/UserLoginJSON');
 
@@ -32,33 +33,7 @@ function register(req, res, next) {
 	res.status(200).end();
 }
 
-function encodeToken(username) {
-	const payload = {
-		expires: moment().add(7, 'days').unix(),
-		instant: moment().unix(),
-		sub: username,
-	};
-	return jwt.encode(payload, settings.secretkey);
-}
-
-function decodeToken(token, cb) {
-	try {
-		const payload = jwt.decode(token, settings.secretkey);
-
-		const now = moment.unix();
-
-		if (now > payload.exp)
-			console.log('Token expired');
-
-		cb(null, payload);
-	} catch (err) {
-		cb(err, null);
-	}
-}
-
 module.exports = {
-	encodeToken,
-	decodeToken,
 	login,
-	register,
+	register
 };

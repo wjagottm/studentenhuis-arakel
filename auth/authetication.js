@@ -3,19 +3,19 @@ const moment = require('moment');
 const jwt = require('jwt-simple');
 
 //
-// Encode (van username naar token)
+// Encode (van userId naar token)
 //
-function encodeToken(username) {
-    const playload = {
+function encodeToken(userId) {
+    const payload = {
         exp: moment().add(10, 'days').unix(),
         iat: moment().unix(),
-        sub: username
+        sub: userId
     };
-    return jwt.encode(playload, settings.secretkey);
+    return jwt.encode(payload, settings.secretkey);
 }
 
 //
-// Decode (van token naar username)
+// Decode (van token naar userId)
 //
 function decodeToken(token, cb) {
 
