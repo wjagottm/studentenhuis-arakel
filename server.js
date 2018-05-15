@@ -12,8 +12,11 @@ const maaltijd_routes = require('./routes/maaltijd_routes')
 const studentenhuis_routes = require('./routes/studentenhuis_routes')
 const config = require('./config/config.json')
 
+
+var db = require('./config/db');
+
 const app = express()
-const port = process.env.PORT || 80
+const port = process.env.PORT || config.webPort || 80
 
 
 app.set('PORT', config.webPort);

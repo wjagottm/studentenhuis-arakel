@@ -4,6 +4,8 @@
 let Studentenhuis = require('../models/Studentenhuis')
 const assert = require('assert')
 
+var db = require('../config/db');
+
 let studentenhuislist = []
 
 module.exports = {
@@ -18,28 +20,75 @@ module.exports = {
         const huisAdres = req.body.huisAdres
         console.log('We got ' + huisNaam + ', ' + huisAdres)
 
-        let studentenhuis = new Studentenhuis(huisNaam, huisAdres)
+        var sql = "INSERT INTO studentenhuis (Naam, Adres, UserID) VALUES ?"
+        var values = [[huisNaam, huisAdres, userId]]
 
-        studentenhuislist.push(studentenhuis)
-
-        res.status(200).json(studentenhuis).end();
+        db.query(sql, [values], function (error, results) {
+                if (error) {
+                        next(error);
+                } else {
+                        res.status(200).json({
+                                status: {
+                                        query: 'OK'
+                                },
+                                result: results.affectedRows
+                        }).end();
+                };
+        });
     },
 
     getStudentenhuis(req, res, next) {
-        res.status(200).json(studentenhuislist).end();
+        db.query('SELECT * FROM studentenhuis', function (error, rows, fields) {
+                if (error) {
+                    next(error);
+                } else {
+                    res.status(200).json({
+                        status: {
+                            query: 'OK'
+                        },
+                        result: rows
+                    }).end();
+                };
+            });
     },
 
     getStudentenhuisById(req, res, next) {
-        let studentenhuis = studentenhuislist.find(req.params.id)
-        res.status(200).json(studentenhuis).end();
+        const id = req.params.id
+        db.query('SELECT * FROM studentenhuis WHERE ID=' + id, function (error, rows, fields) {
+                if (error) {
+                    next(error);
+                } else {
+                    res.status(200).json({
+                        status: {
+                            query: 'OK'
+                        },
+                        result: rows
+                    }).end();
+                };
+            });
     },
 
     editStudentenhuis(req, res, next) {
-        let studentenhuis = studentenhuislist.find(req.params.id)
+        const id = req.params.id
+        
+
     },
 
     deleteStudentenhuis(req, res, next) {
-
+        const id = req.params.id
+        console.log('deleteStudentenhuis id = ' + id)
+        
+        const removedStudentenhuis = studentenhuislist.splice(id, 1)
+        if(removedStudentenhuis.length === 1) {
+            // gelukt; status = 200
+            res.status(200).json(removedStudentenhuis).end();
+        } else {
+            // mislukt; fout -> next(error)
+            let error = {
+                message: "Studentenhuis was not found"
+            }
+            next(error)
+        }
     }
 
 }
