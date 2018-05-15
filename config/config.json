@@ -1,0 +1,7 @@
+{
+    "webPort": "3000",
+    "dbHost": "192.168.2.21",
+    "dbUser": "studentenhuis_user",
+    "dbDatabase": "studentenhuis",
+    "secretkey":  "!321ThisVerySpecialKeyForYou123!"
+}
