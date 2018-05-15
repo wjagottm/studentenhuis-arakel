@@ -16,8 +16,7 @@ function login(req, res, next) {
 	const email = req.body.email
 	const password = req.body.password
 
-	// TODO: Get token from database and check if it exists
-	db.query(db.query(sql, [email], function (error, result) {
+	db.query(sql, [email], function (error, result) {
 		if (error) {
 			next(error);
 		} else if (result[0].Email == email && result[0].Password == password) {
@@ -27,7 +26,7 @@ function login(req, res, next) {
 		} else {
 			res.status(401).json('{"message": "Niet geautoriseerd", "code": 401, "datetime": ' + moment().unix() + '}').end()
 		}
-	}));
+	});
 }
 
 function register(req, res, next) {
@@ -43,20 +42,27 @@ function register(req, res, next) {
 	const lastname = req.body.lastname
 
 	var sql = "INSERT INTO user (Voornaam, Achternaam, Email, Password) VALUES ?"
-        var values = [[firstname, lastname, email, password]]
+    var values = [[firstname, lastname, email, password]]
 
-        db.query(sql, [values], function (error, results) {
-                if (error) {
-                        next(error)
-                } else {
-                        res.status(200).json({
-                                status: {
-                                        query: 'OK'
-                                },
-                                result: results.affectedRows
-                        }).end();
-                };
-        });
+    db.query(sql, [values], function (error, results) {
+        if (error) {
+             next(error)
+        } else {
+			var sql = "SELECT * FROM user WHERE Email = ?"
+
+			db.query(sql, [email], function (error, result) {
+				if (error) {
+					next(error);
+				} else if (result[0].Email == email && result[0].Password == password) {
+					userId = result[0].ID
+					var token = authentication.encodeToken(userId);
+					res.status(200).json('{"token": "' + token + '", "email": "' + email + '"}').end()
+				} else {
+					res.status(401).json('{"message": "Niet geautoriseerd", "code": 401, "datetime": ' + moment().unix() + '}').end()
+				}
+			});
+        };
+    });
 }
 
 module.exports = {

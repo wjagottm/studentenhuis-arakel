@@ -4,7 +4,7 @@ let deelnemercontroller = require('../controllers/deelnemer_controller')
 
 const auth = require('../auth/authentication')
 
-routes.all( new RegExp("[^(\/login)]"), function (req, res, next) {
+routes.all( new RegExp("[^(\/login)][^(\/register)]"), function (req, res, next) {
 
     //
     console.log("VALIDATE TOKEN")

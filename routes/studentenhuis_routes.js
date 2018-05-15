@@ -3,7 +3,7 @@ let routes = express.Router()
 let studentenhuiscontroller = require('../controllers/studentenhuis_controller')
 const auth = require('../auth/authentication')
 
-routes.all( new RegExp("[^(\/login)]"), function (req, res, next) {
+routes.all( new RegExp("[^(\/login)][^(\/register)]"), function (req, res, next) {
 
     //
     console.log("VALIDATE TOKEN")
