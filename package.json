@@ -25,7 +25,8 @@
     "jwt-simple": "^0.5.1",
     "moment": "^2.22.1",
     "mysql": "^2.15.0",
-    "nodemon": "^1.17.4"
+    "nodemon": "^1.17.4",
+    "npm": "^6.0.1"
   },
   "devDependencies": {
     "mocha": "^5.1.1",
