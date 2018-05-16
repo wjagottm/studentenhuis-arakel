@@ -168,6 +168,7 @@ module.exports = {
                             result: results
                         }).end()
                     }
+                })
             }
         })
         
