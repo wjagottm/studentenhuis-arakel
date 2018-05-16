@@ -238,23 +238,65 @@ describe('Login', () => {
         //
         // Hier schrijf je jouw testcase.
         //
+        chai.request(server)
+        .post('/api/login')
+        .send({
+            'email': 'email@email.com',
+            'password': 'secret'
+        })
+        .end( (err, res) => {
+            res.should.have.status(401)
 
+            const error = res.body
+            error.should.have.property('message')
+            error.should.have.property('code').equals(401)
+            error.should.have.property('datetime')
 
         done()
+        })
     })
 
     it('should throw an error when email exists but password is invalid', (done) => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+        .post('/api/login')
+        .send({
+            'email' : 'test1@test.nl',
+            'password' : 'password'
+        })
+        .end((err, res) => {
+            res.should.have.status(412)
+
+            const error = res.body
+            error.should.have.property('message')
+            error.should.have.property('code').equals(412)
+            error.should.have.property('datetime')
+
+            done()
+        })
     })
 
     it('should throw an error when using an invalid email', (done) => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
-    })
+        chai.request(server)
+        .post('/api/login')
+        .send({
+            'email' : 'test1test.nl',
+            'password' : 'secret'
+        })
+        .end((err, res) => {
+            res.should.have.status(412)
 
+            const error = res.body
+            error.should.have.property('message')
+            error.should.have.property('code').equals(412)
+            error.should.have.property('datetime')
+
+            done()
+        })
+    })
 })
