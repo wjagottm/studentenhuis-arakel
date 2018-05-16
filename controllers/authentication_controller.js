@@ -2,6 +2,7 @@ const settings = require('../config/config.json')
 const moment = require('moment')
 const jwt = require('jwt-simple')
 const assert = require('assert')
+const ApiError = require('../models/ApiError')
 
 const bcrypt = require('bcrypt')
 let authentication = require('../auth/authentication')
@@ -37,11 +38,8 @@ function login(req, res, next) {
 						email:  email 
 					}).end()
 				} else {
-					res.status(401).json({
-						message: 'niet geautoriseerd',
-						code: 401,
-						datetime: moment.unix()
-					}).end()
+					const error = new ApiError('niet geautoriseerd', 401)
+					res.status(401).json(error).end()
 				}
 			})
 		}
@@ -87,11 +85,8 @@ function register(req, res, next) {
 								email:  email 
 							}).end()
 						} else {
-							res.status(401).json({
-								message: 'niet geautoriseerd',
-								code: 401,
-								datetime: moment.unix()
-							}).end()
+							const error = new ApiError('niet geautoriseerd', 401)
+							res.status(401).json(error).end()
 						}
 					})
 				}

@@ -11,6 +11,7 @@ const deelnemer_routes = require('./routes/deelnemer_routes')
 const maaltijd_routes = require('./routes/maaltijd_routes')
 const studentenhuis_routes = require('./routes/studentenhuis_routes')
 const config = require('./config/config.json')
+const ApiError = require('./models/ApiError')
 
 
 var db = require('./config/db');
@@ -48,7 +49,9 @@ app.use((err, req, res, next) => {
 	console.log('Catch-all error handler was called.')
 	console.log(err.toString())
 
-	res.status(404).json(err).end()
+	const error = new ApiError(err.toString(), 404)
+
+	res.status(404).json(error).end()
 })
 
 app.listen(port, () => {
