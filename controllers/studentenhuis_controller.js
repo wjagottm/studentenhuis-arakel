@@ -132,22 +132,23 @@ module.exports = {
         });
         
         try{
-            assert(req.body.naam, "Naam must be provided")
-            assert(req.body.adres, "Adres must be provided")
+            assert(req.body.huisNaam, "Naam must be provided")
+            assert(req.body.huisAdres, "Adres must be provided")
         } catch (err){
             next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
         }
 
         const id = req.params.id
 
-        const naam = req.body.naam
-        const adres = req.body.adres
+        const naam = req.body.huisNaam
+        const adres = req.body.huisAdres
 
-        var sql = "UPDATE studentenhuis SET Naam = " + naam + ", Adres = " + adres + " WHERE studentenhuis.ID = " + id + " AND UserID = " + userId
+        var sql = "UPDATE studentenhuis SET Naam = '" + naam + "', Adres = '" + adres + "' WHERE studentenhuis.ID = " + id + " AND UserID = " + userId
 
         db.query(sql, function (error, result) {
             if (error) {
-				next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+                next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+                console.dir(error)
             } else {
                 res.status(200).json({
                     status: {

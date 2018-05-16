@@ -45,7 +45,7 @@ describe('Studentenhuis API POST', () => {
             res.should.have.status(200)
             res.body.should.be.a('object')
 
-            let response = res.body.result
+            let response = res.body.result[0]
             response.should.have.property('ID')
             response.should.have.property('Naam').equals('Avans')
             response.should.have.property('Adres').equals('Hogeschoollaan, Breda')
