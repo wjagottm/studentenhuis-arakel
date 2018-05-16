@@ -4,6 +4,7 @@
 let Deelnemer = require('../models/Deelnemer')
 const assert = require('assert')
 const auth = require('../auth/authentication')
+const ApiError = require('../models/ApiError')
 
 var db = require('../config/db')
 
@@ -17,8 +18,8 @@ module.exports = {
 
         auth.decodeToken(token, (err, payload) => {
             if (err) {
-                console.log('Error handler: ' + err.message);
-                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+				const error = new ApiError('Niet geautoriseerd', err.status || 401)
+                res.status(401).json(error).end()
             } else {
                 console.log(payload)
                 userId = payload.sub
@@ -71,8 +72,8 @@ module.exports = {
 
         auth.decodeToken(token, (err, payload) => {
             if (err) {
-                console.log('Error handler: ' + err.message);
-                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+				const error = new ApiError('Niet geautoriseerd', err.status || 401)
+                res.status(401).json(error).end()
             } else {
                 console.log(payload)
                 userId = payload.sub

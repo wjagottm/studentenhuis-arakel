@@ -11,6 +11,7 @@ const deelnemer_routes = require('./routes/deelnemer_routes')
 const maaltijd_routes = require('./routes/maaltijd_routes')
 const studentenhuis_routes = require('./routes/studentenhuis_routes')
 const config = require('./config/config.json')
+const ApiError = require('./models/ApiError')
 
 
 var db = require('./config/db');
@@ -40,15 +41,15 @@ app.use('/api', maaltijd_routes)
 app.use('/api', studentenhuis_routes)
 
 app.use('*', function (req, res, next) {
-	console.log('De endpoint die je zocht bestaat niet')
-	next("Deze endpoint bestaat niet")
+	let error = new ApiError('De endpoint die je zocht bestaat niet' , 404)
+	next(error)
 })
 
 app.use((err, req, res, next) => {
 	console.log('Catch-all error handler was called.')
 	console.log(err.toString())
 
-	res.status(404).json(err).end()
+	res.status(err.code).json(err).end()
 })
 
 app.listen(port, () => {
