@@ -67,7 +67,7 @@ module.exports = {
             }
         });
 
-        db.query('SELECT * FROM studentenhuis', function (error, rows, fields) {
+        db.query('SELECT studentenhuis.ID, studentenhuis.Naam, Studentenhuis.Adres, user.Voornaam AS Contact, user.Email  FROM studentenhuis, user WHERE studentenhuis.UserId = user.ID', function (error, rows, fields) {
                 if (error) {
                     next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
                 } else {
