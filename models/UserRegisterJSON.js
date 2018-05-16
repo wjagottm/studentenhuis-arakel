@@ -18,7 +18,7 @@ class user {
             assert(typeof (email) === 'string', 'email must be a string')
             assert(typeof (password) === 'string', 'password must be a string')
 		}
-		catch(ex){
+		catch(error){
 			throw(new ApiError(ex.toString(), 422))
 		}
 
