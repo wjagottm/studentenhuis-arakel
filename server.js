@@ -41,17 +41,15 @@ app.use('/api', maaltijd_routes)
 app.use('/api', studentenhuis_routes)
 
 app.use('*', function (req, res, next) {
-	console.log('De endpoint die je zocht bestaat niet')
-	next("Deze endpoint bestaat niet")
+	let error = new ApiError('De endpoint die je zocht bestaat niet' , 404)
+	next(error)
 })
 
 app.use((err, req, res, next) => {
 	console.log('Catch-all error handler was called.')
 	console.log(err.toString())
 
-	const error = new ApiError(err.toString(), 404)
-
-	res.status(404).json(error).end()
+	res.status(err.code).json(err).end()
 })
 
 app.listen(port, () => {
