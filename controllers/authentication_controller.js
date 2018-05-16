@@ -18,7 +18,7 @@ function login(req, res, next) {
 		assert(req.body.email, "Email must be provided")
 		assert(req.body.password, "Password must be provided")
 	} catch (error) {
-		throw(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+		next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
 	}
 
 	const email = req.body.email
@@ -31,7 +31,9 @@ function login(req, res, next) {
 	db.query(sql, [user.email], function (error, result) {
 		if (error) {
 			next(error);
-		} else if (result[0].Email == email) {
+		} else if (result.length == 0){
+			next(new ApiError('Email does not exist', 412))
+		} else {
 			bcrypt.compare(user.password, result[0].Password, function(error, passResult) {
 				if(passResult) {
 					userId = result[0].ID
@@ -57,7 +59,7 @@ function register(req, res, next) {
 		assert(req.body.firstname, "firstname must be provided")
 		assert(req.body.lastname, "lastname must be provided")
 	} catch (error) {
-		throw(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+		next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
 	}
 
 	const email = req.body.email

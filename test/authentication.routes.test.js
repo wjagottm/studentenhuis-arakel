@@ -118,12 +118,12 @@ describe('Registration', () => {
                 'password': 'secret'
             })
             .end( (err, res) => {
-                res.should.have.status(422)
+                res.should.have.status(412)
                 //res.body.should.be.length() > 2
 
                 const error = res.body
                 error.should.have.property('message')
-                error.should.have.property('code').equals(422)
+                error.should.have.property('code').equals(412)
                 error.should.have.property('datetime')
 
                 done()
@@ -167,12 +167,12 @@ describe('Registration', () => {
                 'password': 'secret'
             })
             .end( (err, res) => {
-                res.should.have.status(422)
+                res.should.have.status(412)
                 //res.body.length.should.be > 2
 
                 const error = res.body
                 error.should.have.property('message')
-                error.should.have.property('code').equals(422)
+                error.should.have.property('code').equals(412)
                 error.should.have.property('datetime')
 
                 done()
@@ -192,11 +192,11 @@ describe('Registration', () => {
                 'password': 'secret'
             })
             .end( (err, res) => {
-                res.should.have.status(422)
+                res.should.have.status(412)
 
                 const error = res.body
                 error.should.have.property('message')
-                error.should.have.property('code').equals(422)
+                error.should.have.property('code').equals(412)
                 error.should.have.property('datetime')
 
                 done()
@@ -245,11 +245,11 @@ describe('Login', () => {
             'password': 'secret'
         })
         .end( (err, res) => {
-            res.should.have.status(401)
+            res.should.have.status(412)
 
             const error = res.body
             error.should.have.property('message')
-            error.should.have.property('code').equals(401)
+            error.should.have.property('code').equals(412)
             error.should.have.property('datetime')
 
         done()
@@ -264,7 +264,7 @@ describe('Login', () => {
         .post('/api/login')
         .send({
             'email' : 'test1@test.nl',
-            'password' : 'password'
+            'password' : 123456
         })
         .end((err, res) => {
             res.should.have.status(412)

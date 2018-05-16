@@ -47,6 +47,7 @@ app.use('*', function (req, res, next) {
 
 app.use((err, req, res, next) => {
 	res.status(err.code).json(err).end()
+	console.dir(err)
 })
 
 app.listen(port, () => {
