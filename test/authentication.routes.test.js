@@ -15,15 +15,15 @@ let validToken
 describe('Registration', () => {
     it('should return a token when providing valid information', (done) => {
         chai.request(server)
-            .post('.auth/authentication')
+            .post('.models/UserRegisterJSON')
             .send({
-                'firstname' : 'firstname',
-                'lastname' : 'lastname',
-                'email' : 'tst@test.com',
-                'password' : 'password'
+                'firstname' : '',
+                'lastname' : '',
+                'email' : '',
+                'password' : 'secret'
             })
             .end((err, res) => {
-                res.should.have.status(200)
+                expect(res).to.have.status(200)
                 res.body.should.be.a('object')
 
                 const response = res.body
@@ -88,7 +88,7 @@ describe('Registration', () => {
             .get('/models/UserRegisterJSON')
             .end( (err, res) => {
                 res.should.have.status(200)
-                res.body.should.be.length()
+                res.body.should.be.length() >2
             })
         done()
     })
