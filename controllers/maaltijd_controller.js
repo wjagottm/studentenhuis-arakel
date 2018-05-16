@@ -13,12 +13,15 @@ var db = require('../config/db')
 module.exports = {
     addMaaltijd(req, res, next) {
         console.log('maaltijdcontroller.createMaaltijd')
-
-        assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
-        assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
-        assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
-        assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
-        assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+        try {
+            assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
+            assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
+            assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
+            assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
+            assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+        } catch (error) {
+            throw(new ApiError(error.toString(), 412))
+        }
 
         const maaltijdNaam = req.body.maaltijdNaam
         const maaltijdBeschrijving = req.body.maaltijdBeschrijving
@@ -93,11 +96,15 @@ module.exports = {
     },
 
     editMaaltijd(req, res, next) {
-        assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
-        assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
-        assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
-        assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
-        assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+        try{
+            assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
+            assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
+            assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
+            assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
+            assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+        } catch (error) {
+            throw(new ApiError(error.toString(), 412))
+    }
 
         const maaltijdNaam = req.body.maaltijdNaam
         const maaltijdBeschrijving = req.body.maaltijdBeschrijving

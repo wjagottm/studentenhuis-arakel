@@ -13,9 +13,12 @@ module.exports = {
 
     createStudentenhuis(req, res, next) {
         console.log('studentenhuiscontroller.createStudentenhuis')
-
-        assert(req.body.huisNaam, 'Huisnaam must be provided')
-        assert(req.body.huisAdres, 'Huis adres must be provided')
+        try {
+            assert(req.body.huisNaam, 'Huisnaam must be provided')
+            assert(req.body.huisAdres, 'Huis adres must be provided')
+        } catch (error) {
+            throw(new ApiError(error.toString(), 412))
+        }
 
         var token = (req.header('X-Access-Token')) || '';
         let userId;

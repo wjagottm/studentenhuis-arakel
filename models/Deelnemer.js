@@ -10,7 +10,7 @@ class Deelnemer {
             assert(typeof (deelnemerAchternaam) === 'string', 'deelnemer achternaam must be a string')
             assert(typeof (email) === 'string', 'email must be a string')
         } catch (error) {
-            throw(new ApiError(ex.toString(), 422))
+            throw(new ApiError(error.toString(), 422))
         }
         this.deelnemerId = deelnemerId
         this.deelnemerNaam = deelnemerNaam
