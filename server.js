@@ -18,6 +18,7 @@ var db = require('./config/db');
 const app = express()
 const port = process.env.PORT || config.webPort || 80
 
+console.log("using port: " + port)
 
 app.set('PORT', config.webPort);
 app.set('SECRET_KEY', config.secretkey);
