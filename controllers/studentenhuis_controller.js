@@ -89,6 +89,7 @@ module.exports = {
         assert(req.body.adres, "Adres must be provided")
 
         const id = req.params.id
+        
         const naam = req.body.naam
         const adres = req.body.adres
 

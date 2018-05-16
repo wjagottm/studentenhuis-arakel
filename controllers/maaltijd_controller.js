@@ -24,6 +24,7 @@ module.exports = {
         const maaltijdIngredienten = req.body.maaltijdIngredienten
         const maaltijdAllergie = req.body.maaltijdAllergie
         const maaltijdPrijs = req.body.maaltijdPrijs
+
         const huisId = req.params.huisId
 
         var token = (req.header('X-Access-Token')) || '';
@@ -75,6 +76,7 @@ module.exports = {
 
     getMaaltijdById(req, res, next) {
         const id = req.params.id
+        
         db.query('SELECT * FROM maaltijd WHERE ID=' + id, function (error, rows, fields) {
                 if (error) {
                     next(error)
@@ -101,6 +103,7 @@ module.exports = {
         const maaltijdIngredienten = req.body.maaltijdIngredienten
         const maaltijdAllergie = req.body.maaltijdAllergie
         const maaltijdPrijs = req.body.maaltijdPrijs
+
         const huisId = req.params.huisId
         const maaltijdId = req.params.maaltijdId
 

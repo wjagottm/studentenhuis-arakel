@@ -2,6 +2,7 @@ const settings = require('../config/config.json')
 const moment = require('moment')
 const jwt = require('jwt-simple')
 const assert = require('assert')
+const bcrypt = require('bcrypt')
 let authentication = require('../auth/authentication')
 var db = require('../config/db')
 
@@ -19,20 +20,24 @@ function login(req, res, next) {
 	db.query(sql, [email], function (error, result) {
 		if (error) {
 			next(error);
-		} else if (result[0].Email == email && result[0].Password == password) {
-			userId = result[0].ID
-			var token = authentication.encodeToken(userId);
-
-			res.status(200).json({
-				token: token,
-				email:  email 
-			}).end()
-		} else {
-			res.status(401).json({
-				message: 'niet geautoriseerd',
-				code: 401,
-				datetime: moment.unix()
-			}).end()
+		} else if (result[0].Email == email) {
+			bcrypt.compare(password, result[0].Password, function(error, passResult) {
+				if(passResult) {
+					userId = result[0].ID
+					var token = authentication.encodeToken(userId);
+		
+					res.status(200).json({
+						token: token,
+						email:  email 
+					}).end()
+				} else {
+					res.status(401).json({
+						message: 'niet geautoriseerd',
+						code: 401,
+						datetime: moment.unix()
+					}).end()
+				}
+			})
 		}
 	});
 }
@@ -45,12 +50,13 @@ function register(req, res, next) {
 	assert(req.body.lastname, "lastname must be provided")
 
 	const email = req.body.email
-	const password = req.body.password
+	let password = req.body.password
+	let encryptedPassword = bcrypt.hashSync(password, 10);
 	const firstname = req.body.firstname
 	const lastname = req.body.lastname
 
 	var sql = "INSERT INTO user (Voornaam, Achternaam, Email, Password) VALUES ?"
-    var values = [[firstname, lastname, email, password]]
+    var values = [[firstname, lastname, email, encryptedPassword]]
 
     db.query(sql, [values], function (error, results) {
         if (error) {
@@ -61,19 +67,25 @@ function register(req, res, next) {
 			db.query(sql, [email], function (error, result) {
 				if (error) {
 					next(error);
-				} else if (result[0].Email == email && result[0].Password == password) {
-					userId = result[0].ID
-					var token = authentication.encodeToken(userId);
-					res.status(200).json({
-						token: token,
-						email:  email 
-					}).end()
-				} else {
-					res.status(401).json({
-						message: 'niet geautoriseerd',
-						code: 401,
-						datetime: moment.unix()
-					}).end()
+				} else if (result[0].Email == email) {
+					console.log(password + " AND " + result[0].Password)
+					bcrypt.compare(password, result[0].Password, function(error, passResult) {
+						if(passResult) {
+							userId = result[0].ID
+							var token = authentication.encodeToken(userId);
+				
+							res.status(200).json({
+								token: token,
+								email:  email 
+							}).end()
+						} else {
+							res.status(401).json({
+								message: 'niet geautoriseerd',
+								code: 401,
+								datetime: moment.unix()
+							}).end()
+						}
+					})
 				}
 			});
         };
