@@ -45,13 +45,13 @@ describe('Studentenhuis API POST', () => {
             res.should.have.status(200)
             res.body.should.be.a('object')
 
-            let response = res.body.result[0]
+            let response = res.body.result
             response.should.have.property('ID')
             response.should.have.property('Naam').equals('Avans')
             response.should.have.property('Adres').equals('Hogeschoollaan, Breda')
             response.should.have.property('Contact')
             response.should.have.property('Email')
-
+            
             done()
         })
     })
@@ -172,8 +172,8 @@ describe('Studentenhuis API GET one', () => {
         // Hier schrijf je jouw testcase.
         //
         chai.request(server)
-            .get('/api/studentenhuis/1')
-            .set('x-access-token', token)
+            .get('/api/studentenhuis/2000000')
+            .set('X-access-token', token)
             .end((err, res) => {
                 res.should.have.status(404)
                 res.body.should.be.a('object')
@@ -183,8 +183,7 @@ describe('Studentenhuis API GET one', () => {
                 error.should.have.property('code').equals(404)
                 error.should.have.property('datetime')
                 done()
-            });
-        done()
+            })
     })
 })
 
@@ -194,9 +193,17 @@ describe('Studentenhuis API PUT', () => {
         // Hier schrijf je jouw testcase.
         //
         chai.request(server)
-            .put('/api/studentenhuis')
+            .put('/api/studentenhuis/1')
             .set('X-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
             .end((err, res) => {
+                res.should.have.status(401)
+                res.body.should.be.a('object')
+
+                const error = res.body
+                error.should.have.property('message')
+                error.should.have.property('code').equals(401)
+                error.should.have.property('datetime')
+
                 done()
             })
     })
@@ -206,7 +213,7 @@ describe('Studentenhuis API PUT', () => {
         // Hier schrijf je jouw testcase.
         //
         chai.request(server)
-        .put('/api/studentenhuis')
+        .put('/api/studentenhuis/1')
         .set({'X-Access-Token': token})
         .send({
             'huisNaam' : 'Avans',
@@ -231,14 +238,35 @@ describe('Studentenhuis API PUT', () => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+            .put('/api/studentenhuis/1')
+            .set('X-access-token', token)
+            .send({
+                "adres": "Chasse, Breda"
+            })
+            .end((err, res) => {
+                res.should.have.status(412)
+
+
+                done()
+            })
     })
 
     it('should throw an error when adres is missing', (done) => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+            .put('/api/studentenhuis/1')
+            .set('X-access-token', token)
+            .send({
+                "naam": "Hogeschool"
+            })
+            .end((err, res) => {
+                res.should.have.status(412)
+
+                done()
+            })
     })
 })
 
@@ -247,7 +275,12 @@ describe('Studentenhuis API DELETE', () => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+            .delete('/api/studentenhuis/2')
+            .set('X-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
+            .end((err, res) => {
+                done()
+            })
     })
 
     it('should return a studentenhuis when posting a valid object', (done) => {
