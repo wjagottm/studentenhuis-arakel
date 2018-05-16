@@ -28,7 +28,6 @@ describe('Registration', () => {
 
                 const response = res.body
                 response.should.have.property('token').which.is.a('string')
-                //response.should.have.property('email').which.is.a('string')
 
                 validToken = res.body.token
                 module.exports = {
@@ -120,7 +119,7 @@ describe('Registration', () => {
             })
             .end( (err, res) => {
                 res.should.have.status(422)
-                res.body.should.be.length() > 2
+                //res.body.should.be.length() > 2
 
                 const error = res.body
                 error.should.have.property('message')
@@ -169,7 +168,7 @@ describe('Registration', () => {
             })
             .end( (err, res) => {
                 res.should.have.status(422)
-                res.body.should.be.length() > 2
+                //res.body.length.should.be > 2
 
                 const error = res.body
                 error.should.have.property('message')
@@ -186,12 +185,18 @@ describe('Registration', () => {
         //
         chai.request(server)
             .post('/api/register')
+            .send({
+                'firstname': 'firstname',
+                'lastname': 'lastname',
+                'email': 'emailemail.com',
+                'password': 'secret'
+            })
             .end( (err, res) => {
-                res.should.have.status(412)
+                res.should.have.status(422)
 
                 const error = res.body
                 error.should.have.property('message')
-                error.should.have.property('code').equals(412)
+                error.should.have.property('code').equals(422)
                 error.should.have.property('datetime')
 
                 done()
@@ -206,18 +211,35 @@ describe('Login', () => {
         //
         // Hier schrijf je jouw testcase.
         //
+        chai.request(server)
+        .post('/api/login')
+        .send({
+            'firstname' : 'firstname',
+            'lastname' : 'lastname',
+            'email' : 'test1@test.nl',
+            'password' : 'secret'
+        })
+        .end((err, res) => {
+            res.should.have.status(200)
+            res.body.should.be.a('object')
 
-        validToken = res.body.token
-        module.exports = {
-            token: validToken
-        }
-        done()
+            const response = res.body
+            response.should.have.property('token').which.is.a('string')
+
+            validToken = res.body.token
+            module.exports = {
+                token: validToken
+            }
+            done()  
+        })
     })
 
     it('should throw an error when email does not exist', (done) => {
         //
         // Hier schrijf je jouw testcase.
         //
+
+
         done()
     })
 
