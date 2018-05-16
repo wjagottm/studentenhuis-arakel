@@ -213,7 +213,7 @@ describe('Studentenhuis API PUT', () => {
         // Hier schrijf je jouw testcase.
         //
         chai.request(server)
-        .put('/api/studentenhuis/1')
+        .put('/api/studentenhuis/3')
         .set({'X-Access-Token': token})
         .send({
             'huisNaam' : 'Avans',
@@ -279,6 +279,22 @@ describe('Studentenhuis API DELETE', () => {
             .delete('/api/studentenhuis/2')
             .set('X-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
             .end((err, res) => {
+            
+                done()
+            })
+    })
+
+    it('should give notice that studentenhuis is deleted', (done) => {
+        //
+        // Deze is zelf geïmplementeerd aan de hand van de Swaggger UI
+        //
+
+        chai.request(server)
+            .delete('/api/studentenhuis/4')
+            .set('X-access-token', token)
+            .end((err, res) => {
+                //res.body.result = 1
+                res.should.have.status(200)
                 done()
             })
     })
