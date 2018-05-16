@@ -8,13 +8,13 @@ var db = require('../config/db')
 const user = require('../models/UserLoginJSON')
 
 function login(req, res, next) {
-	var sql = "SELECT * FROM user WHERE Email = ?"
-
 	assert(req.body.email, "Email must be provided")
 	assert(req.body.password, "Password must be provided")
 
 	const email = req.body.email
 	const password = req.body.password
+
+	var sql = "SELECT * FROM user WHERE Email = ?"
 
 	db.query(sql, [email], function (error, result) {
 		if (error) {
@@ -22,9 +22,17 @@ function login(req, res, next) {
 		} else if (result[0].Email == email && result[0].Password == password) {
 			userId = result[0].ID
 			var token = authentication.encodeToken(userId);
-			res.status(200).json('{"token": "' + token + '", "email": "' + email + '"}').end()
+
+			res.status(200).json({
+				token: token,
+				email:  email 
+			}).end()
 		} else {
-			res.status(401).json('{"message": "Niet geautoriseerd", "code": 401, "datetime": ' + moment().unix() + '}').end()
+			res.status(401).json({
+				message: 'niet geautoriseerd',
+				code: 401,
+				datetime: moment.unix()
+			}).end()
 		}
 	});
 }
@@ -56,9 +64,16 @@ function register(req, res, next) {
 				} else if (result[0].Email == email && result[0].Password == password) {
 					userId = result[0].ID
 					var token = authentication.encodeToken(userId);
-					res.status(200).json('{"token": "' + token + '", "email": "' + email + '"}').end()
+					res.status(200).json({
+						token: token,
+						email:  email 
+					}).end()
 				} else {
-					res.status(401).json('{"message": "Niet geautoriseerd", "code": 401, "datetime": ' + moment().unix() + '}').end()
+					res.status(401).json({
+						message: 'niet geautoriseerd',
+						code: 401,
+						datetime: moment.unix()
+					}).end()
 				}
 			});
         };

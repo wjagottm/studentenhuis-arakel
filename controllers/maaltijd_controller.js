@@ -3,31 +3,46 @@
 //
 let Maaltijd = require('../models/Maaltijd')
 const assert = require('assert')
+const auth = require('../auth/authentication')
 
 var db = require('../config/db')
 
 //let maaltijdlist = []
 
 module.exports = {
-    createMaaltijd(req, res, next) {
+    addMaaltijd(req, res, next) {
         console.log('maaltijdcontroller.createMaaltijd')
 
         assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
         assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
-        assert(req.body.maaltijdIngrediënten, 'Maaltijd ingrediënten must be provided')
+        assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
         assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
         assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
 
         const maaltijdNaam = req.body.maaltijdNaam
         const maaltijdBeschrijving = req.body.maaltijdBeschrijving
-        const maaltijdIngrediënten = req.body.maaltijdIngrediënten
+        const maaltijdIngredienten = req.body.maaltijdIngredienten
         const maaltijdAllergie = req.body.maaltijdAllergie
         const maaltijdPrijs = req.body.maaltijdPrijs
+        const huisId = req.params.huisId
 
-        console.log('We got ' + maaltijdNaam + ', ' + maaltijdBeschrijving + ', ' + maaltijdIngrediënten + ', ' + maaltijdAllergie + ', ' + maaltijdPrijs)
+        var token = (req.header('X-Access-Token')) || '';
+        let userId;
 
-        var sql = "INSERT INTO maaltijd (Naam, Beschrijving, Ingerdiënten, Allergie, Prijs) VALUES ?"
-        var values = [[maaltijdNaam, maaltijdBeschrijving, maaltijdIngrediënten, maaltijdAllergie, maaltijdPrijs]]
+        auth.decodeToken(token, (err, payload) => {
+            if (err) {
+                console.log('Error handler: ' + err.message);
+                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+            } else {
+                console.log(payload)
+                userId = payload.sub
+            }
+        });
+
+        console.log('We got ' + maaltijdNaam + ', ' + maaltijdBeschrijving + ', ' + maaltijdIngredienten + ', ' + maaltijdAllergie + ', ' + maaltijdPrijs)
+
+        var sql = "INSERT INTO maaltijd (Naam, Beschrijving, Ingredienten, Allergie, Prijs, UserID, StudentenhuisID) VALUES ?"
+        var values = [[maaltijdNaam, maaltijdBeschrijving, maaltijdIngredienten, maaltijdAllergie, maaltijdPrijs, userId, huisId]]
 
         db.query(sql, [values], function (error, results) {
                 if (error) {
@@ -75,24 +90,80 @@ module.exports = {
     },
 
     editMaaltijd(req, res, next) {
+        assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
+        assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
+        assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
+        assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
+        assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+
+        const maaltijdNaam = req.body.maaltijdNaam
+        const maaltijdBeschrijving = req.body.maaltijdBeschrijving
+        const maaltijdIngredienten = req.body.maaltijdIngredienten
+        const maaltijdAllergie = req.body.maaltijdAllergie
+        const maaltijdPrijs = req.body.maaltijdPrijs
+        const huisId = req.params.huisId
+        const maaltijdId = req.params.maaltijdId
+
+        var token = (req.header('X-Access-Token')) || '';
+        let userId;
+
+        auth.decodeToken(token, (err, payload) => {
+            if (err) {
+                console.log('Error handler: ' + err.message);
+                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+            } else {
+                console.log(payload)
+                userId = payload.sub
+            }
+        });
+
+        var sql = "UPDATE maaltijd SET Naam = '" + maaltijdNaam + "', Beschrijving = '" + maaltijdBeschrijving + "', Ingredienten = '" + maaltijdIngredienten + "', Allergie = '" + maaltijdAllergie + "', Prijs = " + maaltijdPrijs + " WHERE UserID = " + userId + " AND StudentenhuisID = " + huisId
+
+        db.query(sql, function (error, result) {
+            if (error) {
+                next(error)
+            } else {
+                res.status(200).json({
+                    status: {
+                        query: 'OK'
+                    },
+                    result: result.affectedRows
+                }).end()
+            }
+        })
 
     },
 
     deleteMaaltijd(req, res, next) {
-        const id = req.params.id
-        console.log('deleteMaaltijd id = ' + id)
-        
-        const removedMaaltijd = maaltijdlist.splice(id, 1)
-        if(removedMaaltijd.length === 1) {
-            // gelukt; status = 200
-            res.status(200).json(removedMaaltijd).end();
-        } else {
-            // mislukt; fout -> next(error)
-            let error = {
-                message: "Maaltijd was not found"
+        const huisId = req.params.huisId
+        const maaltijdId = req.params.maaltijdId
+
+        var token = (req.header('X-Access-Token')) || '';
+        let userId;
+
+        auth.decodeToken(token, (err, payload) => {
+            if (err) {
+                console.log('Error handler: ' + err.message);
+                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+            } else {
+                console.log(payload)
+                userId = payload.sub
             }
-            next(error)
-        }
+        });
+        
+        var sql = "DELETE FROM maaltijd WHERE ID = " + maaltijdId + " AND UserID = " + userId + " AND StudentenhuisID = " + huisId
+        db.query(sql, function(error, result) {
+            if (error) {
+                next(error)
+            } else {
+                res.status(200).json({
+                    status: {
+                        query: 'OK'
+                    },
+                    result: result.affectedRows
+                }).end()
+            }
+        })
     }
 
 }

@@ -126,8 +126,21 @@ module.exports = {
     deleteStudentenhuis(req, res, next) {
         const id = req.params.id
         console.log('deleteStudentenhuis id = ' + id)
+
+        var token = (req.header('X-Access-Token')) || '';
+        let userId;
+
+        auth.decodeToken(token, (err, payload) => {
+            if (err) {
+                console.log('Error handler: ' + err.message);
+                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+            } else {
+                console.log(payload)
+                userId = payload.sub
+            }
+        });
         
-        var sql = "DELETE FROM studentenhuis WHERE ID = " + id
+        var sql = "DELETE FROM studentenhuis WHERE ID = " + id + " AND UserID = " + userId
         db.query(sql, function(error, result) {
             if (error) {
                 next(error)
