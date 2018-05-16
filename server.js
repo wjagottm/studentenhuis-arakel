@@ -46,9 +46,6 @@ app.use('*', function (req, res, next) {
 })
 
 app.use((err, req, res, next) => {
-	console.log('Catch-all error handler was called.')
-	console.log(err.toString())
-
 	res.status(err.code).json(err).end()
 })
 

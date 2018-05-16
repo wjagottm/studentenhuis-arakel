@@ -81,7 +81,6 @@ function register(req, res, next) {
 				if (error) {
 					next(error);
 				} else if (result[0].Email == email) {
-					console.log(password + " AND " + result[0].Password)
 					bcrypt.compare(password, result[0].Password, function(error, passResult) {
 						if(passResult) {
 							userId = result[0].ID

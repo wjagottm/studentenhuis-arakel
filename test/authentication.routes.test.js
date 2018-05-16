@@ -112,13 +112,19 @@ describe('Registration', () => {
         //
         chai.request(server)
             .post('/api/register')
+            .send({
+                'firstname': 'f',
+                'lastname': 'lastname',
+                'email': 'email@email.com',
+                'password': 'secret'
+            })
             .end( (err, res) => {
-                res.should.have.status(412)
+                res.should.have.status(422)
                 res.body.should.be.length() > 2
 
                 const error = res.body
                 error.should.have.property('message')
-                error.should.have.property('code').equals(412)
+                error.should.have.property('code').equals(422)
                 error.should.have.property('datetime')
 
                 done()
@@ -155,13 +161,19 @@ describe('Registration', () => {
         //
         chai.request(server)
             .post('/api/register')
+            .send({
+                'firstname': 'firstname',
+                'lastname': 'l',
+                'email': 'email@email.com',
+                'password': 'secret'
+            })
             .end( (err, res) => {
-                res.should.have.status(412)
+                res.should.have.status(422)
                 res.body.should.be.length() > 2
 
                 const error = res.body
                 error.should.have.property('message')
-                error.should.have.property('code').equals(412)
+                error.should.have.property('code').equals(422)
                 error.should.have.property('datetime')
 
                 done()
