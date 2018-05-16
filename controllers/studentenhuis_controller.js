@@ -100,6 +100,9 @@ module.exports = {
         db.query('SELECT * FROM studentenhuis WHERE ID=' + id, function (error, rows, fields) {
             if (error) {
 				next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+            } 
+            else if(rows.length === 0){
+                next(new ApiError('Studentenhuis bestaat niet', 404))
             } else {
                 res.status(200).json({
                     status: {
@@ -125,26 +128,17 @@ module.exports = {
             }
         });
         
-        assert(req.body.naam, "Naam must be provided")
-        assert(req.body.adres, "Adres must be provided")
+        try{
+            assert(req.body.naam, "Naam must be provided")
+            assert(req.body.adres, "Adres must be provided")
+        } catch (err){
+            next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+        }
 
         const id = req.params.id
 
         const naam = req.body.naam
         const adres = req.body.adres
-
-        var token = (req.header('X-Access-Token')) || '';
-        let userId;
-
-        auth.decodeToken(token, (err, payload) => {
-            if (err) {
-				const error = new ApiError('Niet geautoriseerd', err.status || 401)
-                res.status(401).json(error).end()
-            } else {
-                console.log(payload)
-                userId = payload.sub
-            }
-        });
 
         var sql = "UPDATE studentenhuis SET Naam = " + naam + ", Adres = " + adres + " WHERE studentenhuis.ID = " + id + " AND UserID = " + userId
 
