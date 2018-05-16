@@ -23,7 +23,7 @@ class user {
 			assert(validateEmail(email), 'email must be a valid emailaddress')
 		}
 		catch(error){
-			throw(new ApiError(error.toString(), 422))
+			throw(new ApiError(error.toString(), 412))
 		}
 
 		this.firstname = firstname;

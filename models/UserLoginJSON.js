@@ -16,7 +16,7 @@ class user {
 			assert(typeof (password) === 'string', 'password must be a string')
 			assert(validateEmail(email.trim()), 'email must be a valid emailaddress')
 		} catch (error) {
-			throw(new ApiError(error.toString(), 422))
+			throw(new ApiError(error.toString(), 412))
 		}
 		this.email = email;
 		this.password = password;

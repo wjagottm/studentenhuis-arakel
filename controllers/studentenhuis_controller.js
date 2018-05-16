@@ -22,8 +22,7 @@ module.exports = {
 
         auth.decodeToken(token, (err, payload) => {
             if (err) {
-				const error = new ApiError('Niet geautoriseerd', err.status || 401)
-                res.status(401).json(error).end()
+				next(new ApiError('Niet geautoriseerd', err.status || 401))
             } else {
                 console.log(payload)
                 userId = payload.sub
@@ -39,7 +38,7 @@ module.exports = {
 
         db.query(sql, [values], function (error, results) {
             if (error) {
-                next(error)
+				next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
             } else {
                 res.status(200).json({
                     status: {
@@ -52,9 +51,22 @@ module.exports = {
     },
 
     getStudentenhuis(req, res, next) {
+        
+        var token = (req.header('X-Access-Token')) || '';
+        let userId;
+
+        auth.decodeToken(token, (err, payload) => {
+            if (err) {
+				next(new ApiError('Niet geautoriseerd', err.status || 401))
+            } else {
+                console.log(payload)
+                userId = payload.sub
+            }
+        });
+
         db.query('SELECT * FROM studentenhuis', function (error, rows, fields) {
                 if (error) {
-                    next(error)
+                    next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
                 } else {
                     res.status(200).json({
                         status: {
@@ -67,11 +79,24 @@ module.exports = {
     },
 
     getStudentenhuisById(req, res, next) {
+        
+        var token = (req.header('X-Access-Token')) || '';
+        let userId;
+
+        auth.decodeToken(token, (err, payload) => {
+            if (err) {
+				next(new ApiError('Niet geautoriseerd', err.status || 401))
+            } else {
+                console.log(payload)
+                userId = payload.sub
+            }
+        });
+        
         const id = req.params.id
 
         db.query('SELECT * FROM studentenhuis WHERE ID=' + id, function (error, rows, fields) {
             if (error) {
-                next(error)
+				next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
             } else {
                 res.status(200).json({
                     status: {
@@ -84,6 +109,19 @@ module.exports = {
     },
 
     editStudentenhuis(req, res, next) {
+        
+        var token = (req.header('X-Access-Token')) || '';
+        let userId;
+
+        auth.decodeToken(token, (err, payload) => {
+            if (err) {
+				next(new ApiError('Niet geautoriseerd', err.status || 401))
+            } else {
+                console.log(payload)
+                userId = payload.sub
+            }
+        });
+        
         assert(req.body.naam, "Naam must be provided")
         assert(req.body.adres, "Adres must be provided")
 
@@ -109,7 +147,7 @@ module.exports = {
 
         db.query(sql, function (error, result) {
             if (error) {
-                next(error)
+				next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
             } else {
                 res.status(200).json({
                     status: {
@@ -143,7 +181,7 @@ module.exports = {
         var sql = "DELETE FROM studentenhuis WHERE ID = " + id + " AND UserID = " + userId
         db.query(sql, function(error, result) {
             if (error) {
-                next(error)
+				next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
             } else {
                 res.status(200).json({
                     status: {

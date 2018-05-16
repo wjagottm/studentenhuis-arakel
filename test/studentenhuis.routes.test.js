@@ -1,7 +1,7 @@
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const server = require('../server')
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjY0OTY1NTQsImlhdCI6MTUyNjQ5Mjk1NCwic3ViIjoxM30.QVu0soIAgx6mkWoxmoliuGnWGNPb7oKaycibtpb3aPI'
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjY1MDEzMzgsImlhdCI6MTUyNjQ5NzczOCwic3ViIjoxM30.7GkwXJEE33GGxX_J49zBQTkNFqj63ydEJb5qqgnWBSY'
 
 chai.should()
 chai.use(chaiHttp)
@@ -36,18 +36,18 @@ describe('Studentenhuis API POST', () => {
         //
         chai.request(server)
         .post('/api/studentenhuis')
-        .set({'X-Access-Token':'token'})
+        .set({'X-Access-Token': token})
         .send({
-            'Naam' : 'Lovensdijk',
-            'Adres' : 'Lovensdijkstraat, Breda'
+            'Naam' : 'Avans',
+            'Adres' : 'Hogeschoollaan, Breda'
         })
         .end((err, res) => {
             res.should.have.status(200)
             res.body.should.be.a('object')
 
             let response = res.body
-            response.should.have.property('Naam').equals('Lovensdijk')
-            response.should.have.property('Adres').equals('Lovensdijkstraat, Breda')
+            response.should.have.property('Naam').equals('Avans')
+            response.should.have.property('Adres').equals('Hogeschoollaan, Breda')
 
             done()
         })
@@ -59,8 +59,9 @@ describe('Studentenhuis API POST', () => {
         //
         chai.request(server)
         .post('/api/studentenhuis')
+        .set({'X-Access-Token': token})
         .send({
-            "Adres": "Lovensdijkstraat, Breda"
+            "Adres": "Claudius Prinsenlaan, Breda"
         })
         .end((err, res) => {
             res.should.have.status(404);
@@ -81,8 +82,9 @@ describe('Studentenhuis API POST', () => {
         //
         chai.request(server)
         .post('/api/studentenhuis')
+        .set({'X-Access-Token': token})
         .send({
-            'Naam' : 'Lovensdijk'
+            'Naam' : 'NHTV'
         })
         .end((err, res) => {
             res.should.have.status(404);
@@ -107,6 +109,13 @@ describe('Studentenhuis API GET all', () => {
             .get('/api/studentenhuis')
             .set('x-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
             .end((err, res) => {
+                res.should.have.status(401);
+                res.body.should.be.a('object')
+
+                const error = res.body
+                error.should.have.property('message')
+                error.should.have.property('code').equals(401)
+                error.should.have.property('datetime')
                 done()
             })
     })
@@ -121,6 +130,9 @@ describe('Studentenhuis API GET all', () => {
             .end((err, res) => {
                 res.should.have.status(200)
                 res.body.should.be.a('object')
+
+                const response = res.body
+                response.should.have.property()
                 
             done()
             })
@@ -132,7 +144,12 @@ describe('Studentenhuis API GET one', () => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+            .get('/api/studentenhuis')
+            .set('x-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
+            .end((err, res) => {
+                done()
+            })
     })
 
     it('should return the correct studentenhuis when using an existing huisId', (done) => {
