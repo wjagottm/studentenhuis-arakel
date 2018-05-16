@@ -1,7 +1,7 @@
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const server = require('../server')
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjY1MDEzMzgsImlhdCI6MTUyNjQ5NzczOCwic3ViIjoxM30.7GkwXJEE33GGxX_J49zBQTkNFqj63ydEJb5qqgnWBSY'
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjY1MDYxMjYsImlhdCI6MTUyNjUwMjUyNiwic3ViIjoxM30.w3DpulPEZXjZyhS9pOnc-3-nIK6aRqBdRd2ppX5X80I'
 
 chai.should()
 chai.use(chaiHttp)
@@ -38,16 +38,19 @@ describe('Studentenhuis API POST', () => {
         .post('/api/studentenhuis')
         .set({'X-Access-Token': token})
         .send({
-            'Naam' : 'Avans',
-            'Adres' : 'Hogeschoollaan, Breda'
+            'huisNaam' : 'Avans',
+            'huisAdres' : 'Hogeschoollaan, Breda'
         })
         .end((err, res) => {
             res.should.have.status(200)
             res.body.should.be.a('object')
 
-            let response = res.body
+            let response = res.body.result[0]
+            response.should.have.property('ID')
             response.should.have.property('Naam').equals('Avans')
             response.should.have.property('Adres').equals('Hogeschoollaan, Breda')
+            response.should.have.property('Contact')
+            response.should.have.property('Email')
 
             done()
         })
@@ -61,15 +64,15 @@ describe('Studentenhuis API POST', () => {
         .post('/api/studentenhuis')
         .set({'X-Access-Token': token})
         .send({
-            "Adres": "Claudius Prinsenlaan, Breda"
+            "huisAdres": "Claudius Prinsenlaan, Breda"
         })
         .end((err, res) => {
-            res.should.have.status(404);
+            res.should.have.status(412);
             res.body.should.be.a('object')
 
             const error = res.body
             error.should.have.property('message')
-            error.should.have.property('code').equals(404)
+            error.should.have.property('code').equals(412)
             error.should.have.property('datetime')
 
         done()
@@ -84,15 +87,15 @@ describe('Studentenhuis API POST', () => {
         .post('/api/studentenhuis')
         .set({'X-Access-Token': token})
         .send({
-            'Naam' : 'NHTV'
+            'huisNaam' : 'NHTV'
         })
         .end((err, res) => {
-            res.should.have.status(404);
+            res.should.have.status(412);
             res.body.should.be.a('object')
 
             const error = res.body
             error.should.have.property('message')
-            error.should.have.property('code').equals(404)
+            error.should.have.property('code').equals(412)
             error.should.have.property('datetime')
 
         done()
@@ -107,7 +110,7 @@ describe('Studentenhuis API GET all', () => {
         //
         chai.request(server)
             .get('/api/studentenhuis')
-            .set('x-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
+            .set('X-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
             .end((err, res) => {
                 res.should.have.status(401);
                 res.body.should.be.a('object')
@@ -126,13 +129,10 @@ describe('Studentenhuis API GET all', () => {
         //
         chai.request(server)
             .get('/api/studentenhuis')
-            .set('x-access-token', token)
+            .set('X-access-token', token)
             .end((err, res) => {
                 res.should.have.status(200)
                 res.body.should.be.a('object')
-
-                const response = res.body
-                response.should.have.property()
                 
             done()
             })
@@ -146,23 +146,44 @@ describe('Studentenhuis API GET one', () => {
         //
         chai.request(server)
             .get('/api/studentenhuis')
-            .set('x-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
+            .set('X-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
             .end((err, res) => {
                 done()
             })
     })
 
-    it('should return the correct studentenhuis when using an existing huisId', (done) => {
+    it('should return the correct studentenhuis when using an eXisting huisId', (done) => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+            .get('/api/studentenhuis/1')
+            .set('X-access-token', token)
+            .end((err, res) => {
+                res.should.have.status(200)
+                res.body.should.be.a('object')
+                res.body.result[0].should.have.property("ID").and.equal(1)
+                done()
+            })
     })
 
-    it('should return an error when using an non-existing huisId', (done) => {
+    it('should return an error when using an non-eXisting huisId', (done) => {
         //
         // Hier schrijf je jouw testcase.
         //
+        chai.request(server)
+            .get('/api/studentenhuis/1')
+            .set('x-access-token', token)
+            .end((err, res) => {
+                res.should.have.status(404)
+                res.body.should.be.a('object')
+
+                const error = res.body
+                error.should.have.property('message')
+                error.should.have.property('code').equals(404)
+                error.should.have.property('datetime')
+                done()
+            });
         done()
     })
 })
@@ -172,14 +193,38 @@ describe('Studentenhuis API PUT', () => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+            .put('/api/studentenhuis')
+            .set('X-access-token', '54vsc6546dgv4545.5sa6546sd8.7a8sad54')
+            .end((err, res) => {
+                done()
+            })
     })
 
     it('should return a studentenhuis with ID when posting a valid object', (done) => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+        .put('/api/studentenhuis')
+        .set({'X-Access-Token': token})
+        .send({
+            'huisNaam' : 'Avans',
+            'huisAdres' : 'Hogeschoollaan, Breda'
+        })
+        .end((err, res) => {
+            res.should.have.status(200)
+            res.body.should.be.a('object')
+
+            let response = res.body.result[0]
+            response.should.have.property('ID')
+            response.should.have.property('Naam').equals('Avans')
+            response.should.have.property('Adres').equals('Hogeschoollaan, Breda')
+            response.should.have.property('Contact')
+            response.should.have.property('Email')
+
+            done()
+        })
     })
 
     it('should throw an error when naam is missing', (done) => {
