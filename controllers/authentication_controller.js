@@ -14,8 +14,12 @@ const UserRegisterJSON = require('../models/UserRegisterJSON')
 const user = require('../models/UserLoginJSON')
 
 function login(req, res, next) {
-	assert(req.body.email, "Email must be provided")
-	assert(req.body.password, "Password must be provided")
+	try {
+		assert(req.body.email, "Email must be provided")
+		assert(req.body.password, "Password must be provided")
+	} catch (error) {
+		throw(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+	}
 
 	const email = req.body.email
 	const password = req.body.password
@@ -47,11 +51,14 @@ function login(req, res, next) {
 }
 
 function register(req, res, next) {
-
-	assert(req.body.email, "Email must be provided")
-	assert(req.body.password, "Password must be provided")
-	assert(req.body.firstname, "firstname must be provided")
-	assert(req.body.lastname, "lastname must be provided")
+	try {
+		assert(req.body.email, "Email must be provided")
+		assert(req.body.password, "Password must be provided")
+		assert(req.body.firstname, "firstname must be provided")
+		assert(req.body.lastname, "lastname must be provided")
+	} catch (error) {
+		throw(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+	}
 
 	const email = req.body.email
 	let password = req.body.password
