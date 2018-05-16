@@ -19,13 +19,15 @@ function login(req, res, next) {
 	const email = req.body.email
 	const password = req.body.password
 
+	let user = new UserLoginJSON(email, password)
+
 	var sql = "SELECT * FROM user WHERE Email = ?"
 
-	db.query(sql, [email], function (error, result) {
+	db.query(sql, [user.email], function (error, result) {
 		if (error) {
 			next(error);
 		} else if (result[0].Email == email) {
-			bcrypt.compare(password, result[0].Password, function(error, passResult) {
+			bcrypt.compare(user.password, result[0].Password, function(error, passResult) {
 				if(passResult) {
 					userId = result[0].ID
 					var token = authentication.encodeToken(userId);
@@ -59,8 +61,10 @@ function register(req, res, next) {
 	const firstname = req.body.firstname
 	const lastname = req.body.lastname
 
+	let user = new UserRegisterJSON(firstname, lastname, email, encryptedPassword)
+
 	var sql = "INSERT INTO user (Voornaam, Achternaam, Email, Password) VALUES ?"
-    var values = [[firstname, lastname, email, encryptedPassword]]
+    var values = [[user.firstname, user.lastname, user.email, user.password]]
 
     db.query(sql, [values], function (error, results) {
         if (error) {

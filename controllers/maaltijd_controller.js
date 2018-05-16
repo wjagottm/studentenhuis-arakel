@@ -5,8 +5,6 @@ let Maaltijd = require('../models/Maaltijd')
 const assert = require('assert')
 const auth = require('../auth/authentication')
 
-const Maaltijd = require('../models/Maaltijd')
-
 var db = require('../config/db')
 
 //let maaltijdlist = []

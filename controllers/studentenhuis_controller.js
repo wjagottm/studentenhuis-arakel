@@ -6,8 +6,6 @@ const assert = require('assert')
 
 const auth = require('../auth/authentication')
 
-const Studentenhuis = require('../models/Studentenhuis')
-
 var db = require('../config/db')
 
 module.exports = {

@@ -5,8 +5,6 @@ let Deelnemer = require('../models/Deelnemer')
 const assert = require('assert')
 const auth = require('../auth/authentication')
 
-const Deelnemer = require('../models/Deelnemer')
-
 var db = require('../config/db')
 
 module.exports = {
