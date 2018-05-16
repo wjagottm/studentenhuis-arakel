@@ -5,6 +5,13 @@
 class Deelnemer {
 
     constructor(deelnemerId, deelnemerVoornaam, deelnemerAchternaam, email, huisId, maaltijdId){
+        try {
+            assert(typeof (deelnemerVoornaam) === 'string', 'deelnemer voornaam must be a string')
+            assert(typeof (deelnemerAchternaam) === 'string', 'deelnemer achternaam must be a string')
+            assert(typeof (email) === 'string', 'email must be a string')
+        } catch (error) {
+            throw(new ApiError(ex.toString(), 422))
+        }
         this.deelnemerId = deelnemerId
         this.deelnemerNaam = deelnemerNaam
         this.huisId = huisId
