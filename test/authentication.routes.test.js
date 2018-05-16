@@ -15,11 +15,11 @@ let validToken
 describe('Registration', () => {
     it('should return a token when providing valid information', (done) => {
         chai.request(server)
-            .post('.models/UserRegisterJSON')
+            .post('/api/register')
             .send({
-                'firstname' : '',
-                'lastname' : '',
-                'email' : '',
+                'firstname' : 'firstname',
+                'lastname' : 'lastname',
+                'email' : 'test@test.nl',
                 'password' : 'secret'
             })
             .end((err, res) => {
@@ -30,9 +30,6 @@ describe('Registration', () => {
                 response.should.have.property('token').which.is.a('string')
                 //response.should.have.property('email').which.is.a('string')
             })
-        //
-        // Hier schrijf je jouw testcase.
-        //
 
         // Tip: deze test levert een token op. Dat token gebruik je in 
         // andere testcases voor beveiligde routes door het hier te exporteren
@@ -45,38 +42,17 @@ describe('Registration', () => {
     })
 
     it('should return an error on GET request', (done) => {
-
-        //
-        // Hier schrijf je jouw testcase.
-        //
-        done()
-    })
-
-    it('should throw an error when the user already exists', (done) => {
-        //
-        // Hier schrijf je jouw testcase.
-        //
-        done()
-    })
-
-    it('should throw an error when no firstname is provided', (done) => {
-        //
-        // Hier schrijf je jouw testcase.
-        //
         chai.request(server)
-            .post('./models/UserRegisterJSON')
-            .send({
-                'lastname': 'lastname'
-            })
-            .end((err, res) => {
-                res.should.have.status(404)
-                res.body.should.be.a('object')
+        .get('/api/register')
+        .end((err, res) => {
+            expect(res).to.have.status(400)
+            res.body.should.be.a('object')
 
                 const error = res.body
                 error.should.have.property('message')
-                error.should.have.property('code').equals(404)
+                error.should.have.property('code').equals(400)
                 error.should.have.property('datetime')
-            })
+        })
         done()
     })
 
@@ -85,10 +61,10 @@ describe('Registration', () => {
         // Hier schrijf je jouw testcase.
         //
         chai.request(server)
-            .get('/models/UserRegisterJSON')
+            .post('/api/register')
             .end( (err, res) => {
                 res.should.have.status(200)
-                res.body.should.be.length() >2
+                res.body.should.be.length(2)
             })
         done()
     })
@@ -98,7 +74,7 @@ describe('Registration', () => {
         // Hier schrijf je jouw testcase.
         //
         chai.request(server)
-            .post('./models/UserRegisterJSON')
+            .post('/api/register')
             .send({
                 'firstname': 'firstname'
             })
@@ -118,6 +94,12 @@ describe('Registration', () => {
         //
         // Hier schrijf je jouw testcase.
         //
+        chai.request(server)
+            .post('/api/register')
+            .end( (err, res) => {
+                res.should.have.status(200)
+                res.body.should.be.length(2)
+            })
         done()
     })
 
@@ -125,6 +107,8 @@ describe('Registration', () => {
         //
         // Hier schrijf je jouw testcase.
         //
+        
+
         done()
     })
 
