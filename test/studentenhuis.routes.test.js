@@ -1,6 +1,7 @@
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const server = require('../server')
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjY0OTY1NTQsImlhdCI6MTUyNjQ5Mjk1NCwic3ViIjoxM30.QVu0soIAgx6mkWoxmoliuGnWGNPb7oKaycibtpb3aPI'
 
 chai.should()
 chai.use(chaiHttp)
@@ -10,7 +11,23 @@ describe('Studentenhuis API POST', () => {
         //
         // Hier schrijf je jouw testcase.
         //
-        done()
+        chai.request(server)
+            .post('/api/register')
+            .set({'X-Access-Token':'54vsc6546dgv4545.5sa6546sd8.7a8sad54'})
+            .send({
+                'huisNaam' : 'Avans',
+                'huisAdres' : 'Hogeschoollaan 1'
+            })
+            .end((err, res) => {
+                res.should.have.status(401)
+
+                const error = res.body
+                error.should.have.property('message')
+                error.should.have.property('code').equals(401)
+                error.should.have.property('datetime')
+                done()
+            done()
+        })
     })
 
     it('should return a studentenhuis when posting a valid object', (done) => {
