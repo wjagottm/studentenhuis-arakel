@@ -5,6 +5,8 @@ let Maaltijd = require('../models/Maaltijd')
 const assert = require('assert')
 const auth = require('../auth/authentication')
 
+const Maaltijd = require('../models/Maaltijd')
+
 var db = require('../config/db')
 
 //let maaltijdlist = []
@@ -76,7 +78,7 @@ module.exports = {
 
     getMaaltijdById(req, res, next) {
         const id = req.params.id
-        
+
         db.query('SELECT * FROM maaltijd WHERE ID=' + id, function (error, rows, fields) {
                 if (error) {
                     next(error)

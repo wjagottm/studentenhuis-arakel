@@ -5,9 +5,9 @@ let Deelnemer = require('../models/Deelnemer')
 const assert = require('assert')
 const auth = require('../auth/authentication')
 
-var db = require('../config/db')
+const Deelnemer = require('../models/Deelnemer')
 
-//let deelnemerlist = []
+var db = require('../config/db')
 
 module.exports = {
     addDeelnemer(req, res, next) {

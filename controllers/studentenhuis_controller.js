@@ -6,9 +6,9 @@ const assert = require('assert')
 
 const auth = require('../auth/authentication')
 
-var db = require('../config/db')
+const Studentenhuis = require('../models/Studentenhuis')
 
-//let studentenhuislist = []
+var db = require('../config/db')
 
 module.exports = {
 
@@ -89,7 +89,7 @@ module.exports = {
         assert(req.body.adres, "Adres must be provided")
 
         const id = req.params.id
-        
+
         const naam = req.body.naam
         const adres = req.body.adres
 

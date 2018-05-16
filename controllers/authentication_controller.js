@@ -2,9 +2,13 @@ const settings = require('../config/config.json')
 const moment = require('moment')
 const jwt = require('jwt-simple')
 const assert = require('assert')
+
 const bcrypt = require('bcrypt')
 let authentication = require('../auth/authentication')
 var db = require('../config/db')
+
+const UserLoginJSON = require('../models/UserLoginJSON')
+const UserRegisterJSON = require('../models/UserRegisterJSON')
 
 const user = require('../models/UserLoginJSON')
 
