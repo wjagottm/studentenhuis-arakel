@@ -2,6 +2,7 @@ const settings = require('../config/config.json')
 const moment = require('moment')
 const jwt = require('jwt-simple')
 const assert = require('assert')
+const ApiError = require('../models/ApiError')
 
 const bcrypt = require('bcrypt')
 let authentication = require('../auth/authentication')
@@ -13,19 +14,27 @@ const UserRegisterJSON = require('../models/UserRegisterJSON')
 const user = require('../models/UserLoginJSON')
 
 function login(req, res, next) {
-	assert(req.body.email, "Email must be provided")
-	assert(req.body.password, "Password must be provided")
+	try {
+		assert(req.body.email, "Email must be provided")
+		assert(req.body.password, "Password must be provided")
+	} catch (error) {
+		next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+	}
 
 	const email = req.body.email
 	const password = req.body.password
 
+	let user = new UserLoginJSON(email, password)
+
 	var sql = "SELECT * FROM user WHERE Email = ?"
 
-	db.query(sql, [email], function (error, result) {
+	db.query(sql, [user.email], function (error, result) {
 		if (error) {
 			next(error);
-		} else if (result[0].Email == email) {
-			bcrypt.compare(password, result[0].Password, function(error, passResult) {
+		} else if (result.length == 0){
+			next(new ApiError('Email does not exist', 412))
+		} else {
+			bcrypt.compare(user.password, result[0].Password, function(error, passResult) {
 				if(passResult) {
 					userId = result[0].ID
 					var token = authentication.encodeToken(userId);
@@ -35,11 +44,8 @@ function login(req, res, next) {
 						email:  email 
 					}).end()
 				} else {
-					res.status(401).json({
-						message: 'niet geautoriseerd',
-						code: 401,
-						datetime: moment.unix()
-					}).end()
+					const error = new ApiError('niet geautoriseerd', 401)
+					res.status(401).json(error).end()
 				}
 			})
 		}
@@ -47,11 +53,14 @@ function login(req, res, next) {
 }
 
 function register(req, res, next) {
-
-	assert(req.body.email, "Email must be provided")
-	assert(req.body.password, "Password must be provided")
-	assert(req.body.firstname, "firstname must be provided")
-	assert(req.body.lastname, "lastname must be provided")
+	try {
+		assert(req.body.email, "Email must be provided")
+		assert(req.body.password, "Password must be provided")
+		assert(req.body.firstname, "firstname must be provided")
+		assert(req.body.lastname, "lastname must be provided")
+	} catch (error) {
+		next(new ApiError('Een of meer properties in de request body ontbreken of zijn foutief', 412))
+	}
 
 	const email = req.body.email
 	let password = req.body.password
@@ -59,41 +68,52 @@ function register(req, res, next) {
 	const firstname = req.body.firstname
 	const lastname = req.body.lastname
 
-	var sql = "INSERT INTO user (Voornaam, Achternaam, Email, Password) VALUES ?"
-    var values = [[firstname, lastname, email, encryptedPassword]]
+	let user = new UserRegisterJSON(firstname, lastname, email, encryptedPassword)
 
-    db.query(sql, [values], function (error, results) {
-        if (error) {
-             next(error)
-        } else {
-			var sql = "SELECT * FROM user WHERE Email = ?"
+	var sql = "SELECT * FROM user WHERE Email = '" + email + "'"
 
-			db.query(sql, [email], function (error, result) {
-				if (error) {
-					next(error);
-				} else if (result[0].Email == email) {
-					console.log(password + " AND " + result[0].Password)
-					bcrypt.compare(password, result[0].Password, function(error, passResult) {
-						if(passResult) {
-							userId = result[0].ID
-							var token = authentication.encodeToken(userId);
-				
-							res.status(200).json({
-								token: token,
-								email:  email 
-							}).end()
-						} else {
-							res.status(401).json({
-								message: 'niet geautoriseerd',
-								code: 401,
-								datetime: moment.unix()
-							}).end()
-						}
-					})
-				}
-			});
-        };
-    });
+	db.query(sql, function(error, results) {
+		if (error) {
+			next(error)
+	   	} else {
+		   	if(results.length != 0) {
+				const error = new ApiError('User already exists', 401)
+				res.status(401).json(error).end()
+		   	} else {
+				var sql = "INSERT INTO user (Voornaam, Achternaam, Email, Password) VALUES ?"
+				var values = [[user.firstname, user.lastname, user.email, user.password]]
+					
+				db.query(sql, [values], function (error, results) {
+					if (error) {
+						next(error)
+					} else {
+						var sql = "SELECT * FROM user WHERE Email = ?"
+						
+						db.query(sql, [email], function (error, result) {
+							if (error) {
+								next(error);
+							} else if (result[0].Email == email) {
+								bcrypt.compare(password, result[0].Password, function(error, passResult) {
+									if(passResult) {
+										userId = result[0].ID
+										var token = authentication.encodeToken(userId);
+										
+										res.status(200).json({
+											token: token,
+											email:  email 
+										}).end()
+									} else {
+										const error = new ApiError('niet geautoriseerd', 401)
+										res.status(401).json(error).end()
+									}
+								})
+							}
+						});
+					};
+				});
+		   	}
+	   }
+	})
 }
 
 module.exports = {

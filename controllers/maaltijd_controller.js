@@ -4,8 +4,7 @@
 let Maaltijd = require('../models/Maaltijd')
 const assert = require('assert')
 const auth = require('../auth/authentication')
-
-const Maaltijd = require('../models/Maaltijd')
+const ApiError = require('../models/ApiError')
 
 var db = require('../config/db')
 
@@ -14,12 +13,15 @@ var db = require('../config/db')
 module.exports = {
     addMaaltijd(req, res, next) {
         console.log('maaltijdcontroller.createMaaltijd')
-
-        assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
-        assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
-        assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
-        assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
-        assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+        try {
+            assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
+            assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
+            assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
+            assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
+            assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+        } catch (error) {
+            throw(new ApiError(error.toString(), 412))
+        }
 
         const maaltijdNaam = req.body.maaltijdNaam
         const maaltijdBeschrijving = req.body.maaltijdBeschrijving
@@ -34,8 +36,8 @@ module.exports = {
 
         auth.decodeToken(token, (err, payload) => {
             if (err) {
-                console.log('Error handler: ' + err.message);
-                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+				const error = new ApiError('Niet geautoriseerd', err.status || 401)
+                res.status(401).json(error).end()
             } else {
                 console.log(payload)
                 userId = payload.sub
@@ -94,11 +96,15 @@ module.exports = {
     },
 
     editMaaltijd(req, res, next) {
-        assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
-        assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
-        assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
-        assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
-        assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+        try{
+            assert(req.body.maaltijdNaam, 'Maaltijd naam must be provided')
+            assert(req.body.maaltijdBeschrijving, 'Maaltijd beschrijving must be provided')
+            assert(req.body.maaltijdIngredienten, 'Maaltijd ingrediënten must be provided')
+            assert(req.body.maaltijdAllergie, 'Maaltijd allergie must be provided')
+            assert(req.body.maaltijdPrijs, 'Maaltijd prijs must be provided')
+        } catch (error) {
+            throw(new ApiError(error.toString(), 412))
+    }
 
         const maaltijdNaam = req.body.maaltijdNaam
         const maaltijdBeschrijving = req.body.maaltijdBeschrijving
@@ -114,8 +120,8 @@ module.exports = {
 
         auth.decodeToken(token, (err, payload) => {
             if (err) {
-                console.log('Error handler: ' + err.message);
-                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+				const error = new ApiError('Niet geautoriseerd', err.status || 401)
+                res.status(401).json(error).end()
             } else {
                 console.log(payload)
                 userId = payload.sub
@@ -148,8 +154,8 @@ module.exports = {
 
         auth.decodeToken(token, (err, payload) => {
             if (err) {
-                console.log('Error handler: ' + err.message);
-                res.status((err.status || 401 )).json({error: new Error("Not authorised").message});
+				const error = new ApiError('Niet geautoriseerd', err.status || 401)
+                res.status(401).json(error).end()
             } else {
                 console.log(payload)
                 userId = payload.sub

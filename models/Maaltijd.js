@@ -11,7 +11,7 @@ class Maaltijd {
         assert(typeof (maaltijdAllergie) === 'string', 'maaltijd allergie must be a string')
         assert(typeof (maaltijdPrijs) === 'string', 'maaltijd prijs must be a string')
     } catch (error) {
-        throw(new ApiError(ex.toString(), 422))
+        throw(new ApiError(error.toString(), 422))
     }
 
     this.maaltijdId = maaltijdId

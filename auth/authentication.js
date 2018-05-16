@@ -27,11 +27,10 @@ function decodeToken(token, cb) {
 
         // Check if the token has expired
         if (now > payload.exp) {
-            console.log('Token has expired.');
+            cb('Token has expired.', null);
+        } else{
+            cb(null, payload);
         }
-
-        // Return
-        cb(null, payload);
 
     } catch(err) {
         cb(err, null);
